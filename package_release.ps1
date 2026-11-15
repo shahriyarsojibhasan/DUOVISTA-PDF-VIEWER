@@ -100,6 +100,28 @@ if ($packerPath -and (Test-Path $pemKey)) {
 # Clean staging build folder
 Remove-Item -Path $cleanBuildDir -Recurse -Force -ErrorAction SilentlyContinue
 
+# 5. Create CRX Bundle ZIP (Contains CRX + Install helpers + Guide)
+$crxZipName = Join-Path $releaseDir "DuoVista-PDF-Studio-v2.1.0-CRX.zip"
+if (Test-Path $crxZipName) { Remove-Item $crxZipName -Force }
+$tempCrxBundle = "$env:TEMP\duovista_crx_bundle_$([System.Guid]::NewGuid().ToString())"
+New-Item -ItemType Directory -Path $tempCrxBundle | Out-Null
+try {
+    if (Test-Path $crxName) {
+        Copy-Item -Path $crxName -Destination $tempCrxBundle -Force
+    }
+    Copy-Item -Path (Join-Path $workspaceDir "1-Click-Install-Edge.bat") -Destination $tempCrxBundle -Force
+    Copy-Item -Path (Join-Path $workspaceDir "Enable-DuoVista-Allowlist.bat") -Destination $tempCrxBundle -Force
+    Copy-Item -Path (Join-Path $workspaceDir "Enable-DuoVista-Allowlist.reg") -Destination $tempCrxBundle -Force
+    Copy-Item -Path (Join-Path $workspaceDir "HOW_TO_INSTALL.txt") -Destination $tempCrxBundle -Force
+    [System.IO.Compression.ZipFile]::CreateFromDirectory($tempCrxBundle, $crxZipName)
+    Write-Host "[OK] CRX Bundle ZIP created: $crxZipName" -ForegroundColor Green
+} finally {
+    Remove-Item -Path $tempCrxBundle -Recurse -Force -ErrorAction SilentlyContinue
+}
+
+# Also copy CRX.zip to workspace root for instant access
+Copy-Item -Path $crxZipName -Destination (Join-Path $workspaceDir "DuoVista-PDF-Studio-v2.1.0-CRX.zip") -Force
+
 # Copy scripts to release folder for direct download
 Copy-Item -Path (Join-Path $workspaceDir "1-Click-Install-Edge.bat") -Destination $releaseDir -Force
 Copy-Item -Path (Join-Path $workspaceDir "Enable-DuoVista-Allowlist.bat") -Destination $releaseDir -Force

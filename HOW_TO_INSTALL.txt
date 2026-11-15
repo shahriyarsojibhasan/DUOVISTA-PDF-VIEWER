@@ -1,0 +1,45 @@
+================================================================================
+          DuoVista PDF Studio (v2.1.0) - Installation Guide
+          Created by Shahriyar Sojib Hasan (100% Free for Students)
+          Support / Cheer Up: https://buymeacoffee.com/shahriyarsojibhasan
+================================================================================
+
+[বাংলা নির্দেশিকা]
+
+কিভাবে খুব সহজে ইনস্টল করবেন (যেকোনো ব্রাউজারে):
+
+পদ্ধতি ১: ১-ক্লিক অটো ইনস্টলার (সবচেয়ে সহজ):
+1. এই ফোল্ডারের "1-Click-Install-Edge.bat" ফাইলে ডাবল ক্লিক করুন।
+2. ব্রাউজারে Developer mode অন করে "Load unpacked" বাটন চাপুন।
+3. ব্যাস! DuoVista সাথে সাথে চালু হয়ে যাবে।
+
+পদ্ধতি ২: CRX ফাইল দিয়ে ইনস্টল:
+1. প্রথমে "Enable-DuoVista-Allowlist.bat" ফাইলটিতে ডাবল ক্লিক করুন।
+2. এরপর Google Chrome বা Microsoft Edge ওপেন করে অ্যাড্রেস বারে যান:
+   - Chrome: chrome://extensions
+   - Edge:   edge://extensions
+3. উপরে ডান কোণে (Edge-এ নিচে বামে) "Developer mode" অন করুন।
+4. এবার "DuoVista-PDF-Studio-v2.1.0.crx" ফাইলটি মাউস দিয়ে টেনে এনে 
+   extensions পেজের ওপর ছেড়ে দিন (Drag and Drop)।
+5. "Add extension" চাপুন। ব্যাস, সম্পন্ন!
+
+--------------------------------------------------------------------------------
+
+[ENGLISH INSTRUCTIONS]
+
+Method 1: 1-Click Helper (Recommended):
+1. Double-click "1-Click-Install-Edge.bat".
+2. Turn ON Developer mode in browser and click "Load unpacked".
+3. Done!
+
+Method 2: Install via CRX file:
+1. Double-click "Enable-DuoVista-Allowlist.bat" to unlock Windows policy.
+2. Open Chrome (chrome://extensions) or Edge (edge://extensions).
+3. Turn ON "Developer mode".
+4. Drag and drop "DuoVista-PDF-Studio-v2.1.0.crx" onto the extensions page.
+5. Click "Add Extension". Done!
+
+================================================================================
+Web Version (No install needed): https://shahriyarsojibhasan.github.io/DuoVista-Pdf-Viewer/
+GitHub: https://github.com/shahriyarsojibhasan/DuoVista-Pdf-Viewer
+================================================================================

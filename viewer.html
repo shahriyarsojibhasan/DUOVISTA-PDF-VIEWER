@@ -544,6 +544,54 @@
     </div>
   </div>
 
+  <!-- File Access Permission Guide Modal -->
+  <div id="filePermissionModal" class="file-perm-modal" style="display: none;">
+    <div class="file-perm-card">
+      <div class="file-perm-header">
+        <div class="file-perm-icon">📂</div>
+        <h3>Allow Access to Local PDF</h3>
+        <button id="btnClosePermModal" class="file-perm-close" title="Close">&times;</button>
+      </div>
+      <p class="file-perm-desc">
+        Chrome & Edge security blocks direct reading of local files (<code id="permFailedFilePath">file:///...</code>) until one-time access is turned on.
+      </p>
+      
+      <div class="file-perm-guide">
+        <div class="perm-step">
+          <div class="perm-step-num">1</div>
+          <div class="perm-step-text">
+            Open Extension Settings:
+            <div class="perm-copy-box">
+              <input type="text" id="permExtUrl" readonly value="chrome://extensions">
+              <button id="btnCopyExtUrl" class="btn-tiny">Copy Link</button>
+            </div>
+          </div>
+        </div>
+        <div class="perm-step">
+          <div class="perm-step-num">2</div>
+          <div class="perm-step-text">
+            Find <strong>DuoVista PDF</strong> &rarr; Click <strong>Details</strong> &rarr; Turn <strong>ON</strong>: <br>
+            <span class="perm-highlight">"Allow access to file URLs"</span> (ফাইল অ্যাক্সেস চালু করুন)
+          </div>
+        </div>
+        <div class="perm-step">
+          <div class="perm-step-num">3</div>
+          <div class="perm-step-text">
+            Refresh or reopen your PDF file!
+          </div>
+        </div>
+      </div>
+
+      <div class="file-perm-divider"><span>OR OPEN DIRECTLY RIGHT NOW</span></div>
+
+      <div class="file-perm-actions">
+        <button id="btnPickLocalFileDirect" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 10px 16px; font-weight: 600;">
+          📄 Pick & Open This PDF File Now (1-Click)
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="toast-container"></div>
 

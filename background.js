@@ -1,20 +1,32 @@
-// Background Service Worker for DuoVista PDF (Manifest V3)
+// Background Service Worker for DuoVista PDF Studio (Manifest V3)
 // Created by Shahriyar Sojib Hasan — Free for Students Worldwide
 
-// Intercept navigations to PDF files to act as Default PDF Viewer
+function shouldInterceptPdf(url) {
+  if (!url) return false;
+  const viewerUrl = chrome.runtime.getURL("viewer.html");
+  if (url.startsWith(viewerUrl)) return false;
+  // Match .pdf files (ignore other files)
+  return /\.pdf($|[?#])/i.test(url);
+}
+
+function redirectToViewer(tabId, originalUrl) {
+  const viewerUrl = chrome.runtime.getURL("viewer.html");
+  const targetViewerUrl = `${viewerUrl}?file=${encodeURIComponent(originalUrl)}`;
+  chrome.tabs.update(tabId, { url: targetViewerUrl });
+}
+
+// 1. WebNavigation Interceptor (Primary - catches before page loads)
 chrome.webNavigation.onBeforeNavigate.addListener((details) => {
   if (details.frameId !== 0) return;
+  if (shouldInterceptPdf(details.url)) {
+    redirectToViewer(details.tabId, details.url);
+  }
+});
 
-  const url = details.url;
-  if (!url) return;
-
-  const viewerUrl = chrome.runtime.getURL("viewer.html");
-  if (url.startsWith(viewerUrl)) return;
-
-  const isPdf = /\.pdf($|[?#])/i.test(url);
-  if (isPdf) {
-    const targetViewerUrl = `${viewerUrl}?file=${encodeURIComponent(url)}`;
-    chrome.tabs.update(details.tabId, { url: targetViewerUrl });
+// 2. Tabs Interceptor (Fallback for local file:/// and direct address bar navigations)
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.url && shouldInterceptPdf(changeInfo.url)) {
+    redirectToViewer(tabId, changeInfo.url);
   }
 });
 

@@ -790,6 +790,38 @@ class DuoVistaApp {
       this.ieltsDrawer.classList.remove('open');
     });
 
+    // File Permission Guide Modal Events
+    const permModal = document.getElementById('filePermissionModal');
+    const btnClosePerm = document.getElementById('btnClosePermModal');
+    const btnCopyExtUrl = document.getElementById('btnCopyExtUrl');
+    const btnPickLocalDirect = document.getElementById('btnPickLocalFileDirect');
+    const permExtUrl = document.getElementById('permExtUrl');
+
+    if (btnClosePerm && permModal) {
+      btnClosePerm.addEventListener('click', () => {
+        permModal.style.display = 'none';
+      });
+    }
+
+    if (btnCopyExtUrl && permExtUrl) {
+      btnCopyExtUrl.addEventListener('click', () => {
+        navigator.clipboard.writeText(permExtUrl.value).then(() => {
+          this.showToast('Link copied! Paste into address bar.');
+        }).catch(() => {
+          permExtUrl.select();
+          document.execCommand('copy');
+          this.showToast('Link copied!');
+        });
+      });
+    }
+
+    if (btnPickLocalDirect && permModal) {
+      btnPickLocalDirect.addEventListener('click', () => {
+        permModal.style.display = 'none';
+        this.fileInput.click();
+      });
+    }
+
     // Drag & Drop
     window.addEventListener('dragenter', (e) => {
       e.preventDefault();
@@ -1138,11 +1170,81 @@ class DuoVistaApp {
     }
   }
 
+  fetchLocalFileAsArrayBuffer(filePath) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', filePath, true);
+      xhr.responseType = 'arraybuffer';
+      xhr.onload = function () {
+        if (xhr.status === 0 || xhr.status === 200) {
+          if (xhr.response && xhr.response.byteLength > 0) {
+            resolve(xhr.response);
+          } else {
+            reject(new Error("Local file is empty or restricted."));
+          }
+        } else {
+          reject(new Error(`Failed to load file. Status: ${xhr.status}`));
+        }
+      };
+      xhr.onerror = function () {
+        reject(new Error("Local file access not allowed by browser."));
+      };
+      xhr.send();
+    });
+  }
+
+  showFilePermissionGuide(url, filename) {
+    const modal = document.getElementById('filePermissionModal');
+    if (!modal) return;
+    
+    const pathElem = document.getElementById('permFailedFilePath');
+    if (pathElem) {
+      pathElem.textContent = decodeURIComponent(url || '');
+    }
+
+    const extUrlInput = document.getElementById('permExtUrl');
+    if (extUrlInput) {
+      const isEdge = navigator.userAgent.includes('Edg/');
+      const browserScheme = isEdge ? 'edge' : 'chrome';
+      const extId = (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) ? chrome.runtime.id : '';
+      extUrlInput.value = extId ? `${browserScheme}://extensions/?id=${extId}` : `${browserScheme}://extensions`;
+    }
+
+    modal.style.display = 'flex';
+  }
+
   async loadUrl(url) {
+    if (!url) return;
     try {
       this.showToast('Fetching PDF...');
-      const doc = await pdfjsLib.getDocument(url).promise;
-      const filename = url.substring(url.lastIndexOf('/') + 1) || 'document.pdf';
+      const cleanUrl = url.trim();
+      const rawName = cleanUrl.substring(cleanUrl.lastIndexOf('/') + 1).split('?')[0].split('#')[0];
+      const filename = decodeURIComponent(rawName) || 'document.pdf';
+
+      let doc;
+      if (cleanUrl.startsWith('file://')) {
+        // Read local file through arraybuffer (required by Chromium for extensions)
+        try {
+          const buffer = await this.fetchLocalFileAsArrayBuffer(cleanUrl);
+          doc = await pdfjsLib.getDocument({ data: buffer }).promise;
+        } catch (fileErr) {
+          console.warn("Direct file XHR read failed, checking permissions...", fileErr);
+          this.showFilePermissionGuide(cleanUrl, filename);
+          this.showToast('Local file permission needed. See guide on screen.');
+          return;
+        }
+      } else {
+        // HTTP/HTTPS or chrome-extension://
+        try {
+          doc = await pdfjsLib.getDocument(cleanUrl).promise;
+        } catch (fetchErr) {
+          console.warn("Direct pdfjs getDocument failed, retrying with fetch ArrayBuffer...", fetchErr);
+          const res = await fetch(cleanUrl);
+          const buffer = await res.arrayBuffer();
+          doc = await pdfjsLib.getDocument({ data: buffer }).promise;
+        }
+      }
+
       this.doc1 = doc;
       this.doc2 = doc;
       this.currentFileName = filename;
@@ -1157,8 +1259,9 @@ class DuoVistaApp {
 
       this.showToast(`Loaded "${filename}"`);
     } catch (err) {
-      console.error(err);
+      console.error('Failed to load PDF URL:', err);
       this.showToast('Failed to fetch PDF.');
+      this.showFilePermissionGuide(url, 'PDF Document');
     }
   }
 

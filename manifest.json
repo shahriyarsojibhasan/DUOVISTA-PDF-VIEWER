@@ -11,7 +11,8 @@
     "tabs"
   ],
   "host_permissions": [
-    "<all_urls>"
+    "<all_urls>",
+    "file://*/*"
   ],
   "action": {
     "default_title": "Open DuoVista PDF Studio",

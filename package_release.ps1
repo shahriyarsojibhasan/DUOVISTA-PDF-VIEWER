@@ -33,6 +33,7 @@ $includeItems = @(
     "robots.txt",
     "sitemap.xml",
     "README.md",
+    "1-Click-Install-Edge.bat",
     "Enable-DuoVista-Allowlist.bat",
     "Enable-DuoVista-Allowlist.reg",
     "icons",
@@ -98,6 +99,7 @@ if ($packerPath -and (Test-Path $pemKey)) {
 Remove-Item -Path $cleanBuildDir -Recurse -Force -ErrorAction SilentlyContinue
 
 # Copy scripts to release folder for direct download
+Copy-Item -Path (Join-Path $workspaceDir "1-Click-Install-Edge.bat") -Destination $releaseDir -Force
 Copy-Item -Path (Join-Path $workspaceDir "Enable-DuoVista-Allowlist.bat") -Destination $releaseDir -Force
 Copy-Item -Path (Join-Path $workspaceDir "Enable-DuoVista-Allowlist.reg") -Destination $releaseDir -Force
 

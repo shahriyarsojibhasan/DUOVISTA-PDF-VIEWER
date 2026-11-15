@@ -1,0 +1,15 @@
+Windows Registry Editor Version 5.00
+
+; DuoVista PDF Studio - Browser Allowlist Registry Fix
+; Created by Shahriyar Sojib Hasan (buymeacoffee.com/shahriyarsojibhasan)
+; This enables offline CRX installation and bypasses the "Not listed in Chrome Web Store" warning
+; Extension ID: nddnddpjpbnkkbekjdflejaefbeniloa
+
+[HKEY_CURRENT_USER\Software\Policies\Google\Chrome\ExtensionInstallAllowlist]
+"1"="nddnddpjpbnkkbekjdflejaefbeniloa"
+
+[HKEY_CURRENT_USER\Software\Policies\Microsoft\Edge\ExtensionInstallAllowlist]
+"1"="nddnddpjpbnkkbekjdflejaefbeniloa"
+
+[HKEY_CURRENT_USER\Software\Policies\BraveSoftware\Brave\ExtensionInstallAllowlist]
+"1"="nddnddpjpbnkkbekjdflejaefbeniloa"

@@ -1,0 +1,13 @@
+# Dependency & System files
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+
+# Keep release files for easy download
+!release/
+!release/*.zip
+!release/*.crx
+
+# Ignore private signing pem key for security
+release/*.pem

@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "DuoVista PDF — Split Screen & Dual Document Reader",
+  "version": "2.1.0",
+  "author": "Shahriyar Sojib Hasan",
+  "description": "Unique dual split-screen PDF reader by Shahriyar Sojib Hasan. Free for students worldwide. Features Up-Down split, independent hover scroll, 2-file dual PDF mode, and Edge-style annotations.",
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "webNavigation",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_title": "Open DuoVista PDF Studio",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "sample/*",
+        "lib/*",
+        "icons/*",
+        "viewer.html"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}

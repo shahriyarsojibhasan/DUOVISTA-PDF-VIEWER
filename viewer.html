@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DuoVista PDF Studio — Split Screen Reader</title>
+  <link rel="stylesheet" href="lib/pdf_viewer.css">
+  <link rel="stylesheet" href="viewer.css">
+</head>
+<body class="theme-light">
+  <!-- Top Navigation Bar (Clean, Compact & Uncluttered) -->
+  <header id="mainHeader" class="main-header">
+    <!-- Left Section: Logo, Developer Credit & Open PDF -->
+    <div class="header-left">
+      <div class="brand-group" id="btnBrandAbout" title="Click to view App & Developer info">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="7" fill="#2563EB"/>
+            <rect x="5" y="6" width="22" height="8.5" rx="2" fill="#FFFFFF"/>
+            <rect x="5" y="17.5" width="22" height="8.5" rx="2" fill="#BAE6FD"/>
+            <circle cx="8" cy="10.25" r="1.5" fill="#2563EB"/>
+            <line x1="12" y1="10.25" x2="24" y2="10.25" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="8" cy="21.75" r="1.5" fill="#0284C7"/>
+            <line x1="12" y1="21.75" x2="24" y2="21.75" stroke="#0284C7" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="brand-titles">
+          <div class="brand-row">
+            <span class="brand-name">DuoVista</span>
+            <span class="creator-badge">by Shahriyar</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- File Indicator & Open Action -->
+      <div class="file-control-group">
+        <button id="btnOpenPdf" class="btn btn-primary" title="Open PDF from Computer">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span id="openPdfBtnText">Open PDF</span>
+        </button>
+        <span class="file-pill" id="filePill" style="display: none;" title="Current document">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+          <span id="activeFileName">document.pdf</span>
+        </span>
+        <input type="file" id="fileInput" accept="application/pdf,.pdf" style="display: none;">
+        <input type="file" id="fileInputTop" accept="application/pdf,.pdf" style="display: none;">
+        <input type="file" id="fileInputBottom" accept="application/pdf,.pdf" style="display: none;">
+      </div>
+    </div>
+
+    <!-- Center Section: Essential Layout & Doc Mode -->
+    <div class="header-center">
+      <!-- Layout Modes (Up-Down Default) -->
+      <div class="layout-toggle-group" role="group" aria-label="Layout Modes">
+        <button id="btnLayoutVertical" class="layout-btn active" title="Top-and-Bottom (Up-Down Split - Default)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+          </svg>
+          <span>Up-Down</span>
+        </button>
+        <button id="btnLayoutHorizontal" class="layout-btn" title="Side-by-Side (Left & Right Split)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <line x1="12" y1="3" x2="12" y2="21"/>
+          </svg>
+          <span>Side-by-Side</span>
+        </button>
+        <button id="btnLayoutSingle" class="layout-btn" title="Single View">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+          </svg>
+          <span>Single</span>
+        </button>
+      </div>
+
+      <!-- Mode Selector: Same PDF vs Two Different PDFs -->
+      <div class="doc-mode-toggle" role="group" aria-label="Document Mode">
+        <button id="btnModeSame" class="mode-btn active" title="View 2 parts of the same PDF">
+          <span>1 PDF</span>
+        </button>
+        <button id="btnModeDual" class="mode-btn" title="View TWO DIFFERENT PDF files at the same time">
+          <span>2 Different PDFs</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Section: Primary Tools, Timer & 3-Line Menu -->
+    <div class="header-right">
+      <!-- Annotate Bar Toggle -->
+      <button id="btnToggleAnnotate" class="tool-btn" title="Show/Hide Annotation Tools (Highlighter, Pen, Text)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+          <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+        </svg>
+        <span>Annotate</span>
+      </button>
+
+      <!-- Exam Timer Pill -->
+      <div class="exam-timer-box" id="timerBox">
+        <span id="timerTime" class="timer-display">20:00</span>
+        <button id="btnTimerStart" class="timer-btn" title="Start / Pause">
+          <svg id="timerIconPlay" width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <svg id="timerIconPause" width="9" height="9" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        </button>
+        <button id="btnTimerReset" class="timer-btn" title="Reset">↻</button>
+      </div>
+
+      <!-- IELTS Answer Sheet Drawer Button -->
+      <button id="btnToggleDrawer" class="btn btn-accent btn-compact" title="Open IELTS Answer Sheet (Q1-40) & Notes">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+        </svg>
+        <span>IELTS Sheet</span>
+      </button>
+
+      <!-- Fullscreen Button -->
+      <button id="btnFullscreen" class="tool-btn icon-only" title="Full Screen: Hide browser UI (F11)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+        </svg>
+      </button>
+
+      <!-- 3-LINE SLIDE DRAWER MENU BUTTON (☰) -->
+      <button id="btnMenuDrawer" class="tool-btn btn-hamburger" title="Options, Audio, Themes & About (3-Line Menu)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- 3-LINE SLIDE-OUT MENU DRAWER -->
+  <aside id="menuDrawer" class="menu-drawer">
+    <div class="menu-drawer-header">
+      <div class="menu-drawer-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+        </svg>
+        <span>DuoVista Menu & Settings</span>
+      </div>
+      <button id="btnCloseMenuDrawer" class="drawer-close-btn" title="Close Menu">✕</button>
+    </div>
+
+    <div class="menu-drawer-content">
+      <!-- Buy Me A Coffee & Cheer Up Card -->
+      <div class="coffee-card">
+        <div class="coffee-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          <span>Cheer Up & Support</span>
+        </div>
+        <p class="coffee-text">
+          DuoVista PDF is <strong>100% free</strong> for students worldwide. If this tool aids your studies, buy me a coffee to keep it completely free and open!
+        </p>
+        <a id="btnBuyCoffee" class="coffee-btn" href="https://buymeacoffee.com/shahriyarsojibhasan" target="_blank" rel="noopener noreferrer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
+          <span>buymeacoffee.com/shahriyarsojibhasan</span>
+          <span class="coffee-arrow">↗</span>
+        </a>
+      </div>
+
+      <!-- App & Developer Info Card -->
+      <div class="menu-section">
+        <div class="menu-section-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Developer & App Info</span>
+        </div>
+        <div class="dev-info-box">
+          <div class="dev-row">
+            <span class="dev-label">Developer:</span>
+            <strong class="dev-val">Shahriyar Sojib Hasan</strong>
+          </div>
+          <div class="dev-row">
+            <span class="dev-label">Version:</span>
+            <span class="dev-val badge-ver">v2.1.0 (Store Release)</span>
+          </div>
+          <div class="dev-row">
+            <span class="dev-label">License:</span>
+            <span class="dev-val">Free for All Students Worldwide</span>
+          </div>
+          <blockquote class="dev-quote">
+            "Education should never be constrained by clunky software or paywalls. DuoVista PDF is built to give students an unfair advantage."
+            <cite>— Shahriyar Sojib Hasan</cite>
+          </blockquote>
+        </div>
+      </div>
+
+      <!-- Reading Color Themes -->
+      <div class="menu-section">
+        <div class="menu-section-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <span>Reading Theme (Eye-Care)</span>
+        </div>
+        <div class="theme-chips">
+          <button class="theme-chip active" data-theme="theme-light">
+            <span class="theme-chip-dot" style="background:#ffffff; border:1px solid #cbd5e1;"></span>
+            <span>☀️ Light</span>
+          </button>
+          <button class="theme-chip" data-theme="theme-dark">
+            <span class="theme-chip-dot" style="background:#111827;"></span>
+            <span>🌙 Dark</span>
+          </button>
+          <button class="theme-chip" data-theme="theme-sepia">
+            <span class="theme-chip-dot" style="background:#f4ecd8;"></span>
+            <span>📜 Sepia</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Study Tools & Audio Player -->
+      <div class="menu-section">
+        <div class="menu-section-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+          <span>Listening Audio Player</span>
+        </div>
+        <div class="menu-audio-box">
+          <div class="menu-audio-header">
+            <span>MP3 Audio Track</span>
+            <button id="btnMenuLoadAudio" class="btn btn-small btn-secondary">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+              Load MP3
+            </button>
+          </div>
+          <div class="menu-audio-controls">
+            <button id="btnMenuAudioPlay" class="audio-btn-large">▶ Play</button>
+            <span id="menuAudioTime" class="audio-time">00:00</span>
+            <input type="range" id="menuAudioProgress" class="audio-slider-menu" min="0" max="100" value="0">
+          </div>
+          <input type="file" id="audioFileInput" accept="audio/*" style="display: none;">
+          <audio id="htmlAudio"></audio>
+        </div>
+
+        <div class="menu-action-buttons">
+          <button id="btnMenuSwap" class="menu-action-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16V4m0 0L3 8m4-4l4 4m6 4v12m0 0l4-4m-4 4l-4-4"/></svg>
+            <span>Swap Panes (Top ↔ Bottom)</span>
+          </button>
+          <button id="btnMenuReset" class="menu-action-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M12 3v18"/></svg>
+            <span>Reset Split to 50:50</span>
+          </button>
+          <button id="btnMenuSync" class="menu-action-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <span id="menuSyncText">Toggle Sync Scroll (Current: OFF)</span>
+          </button>
+          <button id="btnMenuSample" class="menu-action-btn btn-highlight-action">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span>Load Practice IELTS Test</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Timer Preset Settings -->
+      <div class="menu-section">
+        <div class="menu-section-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>Timer Preset</span>
+        </div>
+        <select id="timerPreset" class="tool-select menu-select" title="Preset">
+          <option value="1200">20 Min (IELTS Reading Passage)</option>
+          <option value="3600">60 Min (Full Academic Exam)</option>
+          <option value="1800">30 Min (IELTS Listening Test)</option>
+          <option value="stopwatch">Stopwatch (Count Up)</option>
+        </select>
+      </div>
+
+      <!-- Keyboard Shortcuts Reference -->
+      <div class="menu-section">
+        <div class="menu-section-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="8" x2="6.01" y2="8"/><line x1="10" y1="8" x2="10.01" y2="8"/><line x1="14" y1="8" x2="14.01" y2="8"/><line x1="18" y1="8" x2="18.01" y2="8"/><line x1="8" y1="16" x2="16" y2="16"/></svg>
+          <span>Keyboard Shortcuts</span>
+        </div>
+        <div class="shortcuts-list">
+          <div class="shortcut-item"><kbd>F11</kbd> <span>Full Screen (Hide tabs/bookmarks)</span></div>
+          <div class="shortcut-item"><kbd>Double-Click</kbd> <span>Reset divider to 50:50</span></div>
+          <div class="shortcut-item"><kbd>Hover</kbd> <span>Point mouse to scroll pane</span></div>
+        </div>
+      </div>
+
+      <!-- Legal Links -->
+      <div class="menu-legal-links">
+        <a href="privacy.html" target="_blank">Privacy Policy</a> • 
+        <a href="terms.html" target="_blank">Terms of Service</a> • 
+        <a href="llms.txt" target="_blank">AI & LLMs Index</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Hideable Microsoft Edge-Style Floating Annotation Bar -->
+  <aside id="annotationToolbar" class="annotation-bar" style="display: none;">
+    <div class="annotation-handle">✏️ Annotations</div>
+    
+    <!-- Highlighter -->
+    <div class="annot-tool-group">
+      <button id="annotBtnHighlight" class="annot-btn" title="Highlighter">
+        <span class="color-preview" id="highlightColorPreview" style="background-color: #fef08a;"></span>
+        <span>Highlight</span>
+      </button>
+      <div class="color-picker-dropdown" id="highlightColorPicker">
+        <span class="color-dot active" data-color="#fef08a" style="background:#fef08a;" title="Yellow"></span>
+        <span class="color-dot" data-color="#bbf7d0" style="background:#bbf7d0;" title="Green"></span>
+        <span class="color-dot" data-color="#fbcfe8" style="background:#fbcfe8;" title="Pink"></span>
+        <span class="color-dot" data-color="#bae6fd" style="background:#bae6fd;" title="Blue"></span>
+      </div>
+    </div>
+
+    <!-- Freehand Ink Pen -->
+    <div class="annot-tool-group">
+      <button id="annotBtnPen" class="annot-btn" title="Pen">
+        <span class="color-preview" id="penColorPreview" style="background-color: #2563eb;"></span>
+        <span>Pen</span>
+      </button>
+      <div class="color-picker-dropdown" id="penColorPicker">
+        <span class="color-dot active" data-color="#2563eb" style="background:#2563eb;" title="Blue"></span>
+        <span class="color-dot" data-color="#ef4444" style="background:#ef4444;" title="Red"></span>
+        <span class="color-dot" data-color="#0f172a" style="background:#0f172a;" title="Black"></span>
+        <span class="color-dot" data-color="#10b981" style="background:#10b981;" title="Green"></span>
+      </div>
+    </div>
+
+    <!-- Add Text Box -->
+    <button id="annotBtnText" class="annot-btn" title="Add Text Note anywhere on PDF">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+      <span>Text</span>
+    </button>
+
+    <!-- Eraser -->
+    <button id="annotBtnEraser" class="annot-btn" title="Eraser tool">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20H7L3 16C2 15 2 13 3 12L13 2L22 11L18 15"/><line x1="18" y1="11" x2="14" y2="15"/></svg>
+      <span>Eraser</span>
+    </button>
+
+    <!-- Clear Annotations -->
+    <button id="annotBtnClear" class="annot-btn annot-btn-danger" title="Clear all annotations on current page">
+      <span>Clear</span>
+    </button>
+
+    <!-- Close Annotation Bar -->
+    <button id="btnCloseAnnotBar" class="annot-close" title="Hide Annotation Bar">✕</button>
+  </aside>
+
+  <!-- Two Different PDFs File Pickers Bar (Visible only in 2 Different PDFs mode) -->
+  <div id="dualFileBar" class="dual-file-bar" style="display: none;">
+    <div class="dual-file-item">
+      <span class="dual-badge pane1-badge">Top Pane PDF</span>
+      <span id="labelTopPdf" class="dual-file-name">sample_ielts_reading.pdf</span>
+      <button id="btnPickTopPdf" class="btn btn-small btn-secondary">Change Top PDF</button>
+    </div>
+    <div class="dual-file-divider"></div>
+    <div class="dual-file-item">
+      <span class="dual-badge pane2-badge">Bottom Pane PDF</span>
+      <span id="labelBottomPdf" class="dual-file-name">sample_ielts_reading.pdf</span>
+      <button id="btnPickBottomPdf" class="btn btn-small btn-secondary">Change Bottom PDF</button>
+    </div>
+  </div>
+
+  <!-- Main Dual Viewer Workspace -->
+  <main id="appWorkspace">
+    <!-- Welcome Screen (Shown ONLY when no PDF is loaded) -->
+    <div id="welcomeScreen" class="welcome-screen">
+      <div class="welcome-card">
+        <div class="welcome-icon-wrap">
+          <svg width="48" height="48" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="7" fill="#2563EB"/>
+            <rect x="5" y="6" width="22" height="8.5" rx="2" fill="#FFFFFF"/>
+            <rect x="5" y="17.5" width="22" height="8.5" rx="2" fill="#BAE6FD"/>
+            <circle cx="8" cy="10.25" r="1.5" fill="#2563EB"/>
+            <line x1="12" y1="10.25" x2="24" y2="10.25" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="8" cy="21.75" r="1.5" fill="#0284C7"/>
+            <line x1="12" y1="21.75" x2="24" y2="21.75" stroke="#0284C7" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h2>DuoVista PDF Studio</h2>
+        <p class="welcome-byline">Designed & Built by <strong>Shahriyar Sojib Hasan</strong></p>
+        <p class="welcome-subtitle">
+          Dedicated 100% free for all students worldwide. Seamless Up-Down dual PDF reading, independent hover scroll, Edge annotations & dual document comparison.
+        </p>
+
+        <div class="welcome-actions">
+          <button id="btnWelcomeOpen" class="btn btn-primary btn-large">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            Open Any PDF File
+          </button>
+          <button id="btnWelcomeSample" class="btn btn-secondary btn-large">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            Try Practice IELTS Test
+          </button>
+        </div>
+
+        <div class="welcome-features">
+          <div class="feature-item">
+            <span class="feat-badge">⬒ Up-Down Hairline</span>
+            <strong>Ultra-Thin 2px Split</strong>
+            <span>Zero thick middle toolbars. Full focus on reading.</span>
+          </div>
+          <div class="feature-item">
+            <span class="feat-badge">📑 Dual Document</span>
+            <strong>Two Different PDFs</strong>
+            <span>Questions on top and answer key or reference below.</span>
+          </div>
+          <div class="feature-item">
+            <span class="feat-badge">✏️ Annotations</span>
+            <strong>Highlight, Text & Pen</strong>
+            <span>Mark text with colors or write notes directly on pages.</span>
+          </div>
+          <div class="feature-item">
+            <span class="feat-badge">🖱️ Hover Scroll</span>
+            <strong>Independent Scrolling</strong>
+            <span>Point mouse at either pane to scroll independently.</span>
+          </div>
+        </div>
+
+        <!-- Support Badge on Welcome Card -->
+        <div class="welcome-coffee-box">
+          <span>💖 Love this free tool?</span>
+          <a href="https://buymeacoffee.com/shahriyarsojibhasan" target="_blank" rel="noopener noreferrer" class="welcome-coffee-link">
+            ☕ Buy Me a Coffee (Support Shahriyar)
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Viewer Container (Default: Up-Down Vertical Split) -->
+    <div id="viewerContainer" class="viewer-container layout-vertical" style="display: none;">
+      <!-- TOP PANE (Pane 1) -->
+      <section id="pane1" class="viewer-pane" data-pane-id="pane1">
+        <!-- Floating Micro Controls (NO thick middle toolbar!) -->
+        <div class="pane-floating-bar">
+          <span class="floating-tag pane1-badge">Top Pane</span>
+          <div class="floating-nav">
+            <button class="f-btn btn-prev-page" title="Previous Page">◀</button>
+            <span class="f-page-info"><input type="number" class="pane-page-input" min="1" value="1"> / <span class="pane-total-pages">0</span></span>
+            <button class="f-btn btn-next-page" title="Next Page">▶</button>
+          </div>
+          <div class="floating-zoom">
+            <button class="f-btn btn-zoom-out" title="Zoom Out">−</button>
+            <select class="f-select pane-zoom-select" title="Zoom">
+              <option value="fit-width">Fit Width</option>
+              <option value="fit-page">Fit Page</option>
+              <option value="0.75">75%</option>
+              <option value="1.0" selected>100%</option>
+              <option value="1.25">125%</option>
+              <option value="1.5">150%</option>
+              <option value="2.0">200%</option>
+            </select>
+            <button class="f-btn btn-zoom-in" title="Zoom In">+</button>
+            <button class="f-btn btn-rotate" title="Rotate 90°">↻</button>
+          </div>
+        </div>
+
+        <!-- Viewport -->
+        <div id="pane1Viewport" class="pane-viewport">
+          <div id="pane1Pages" class="pages-wrapper"></div>
+        </div>
+      </section>
+
+      <!-- ULTRA-THIN 2PX RESIZER (Clean hairline divider with ZERO thick bars) -->
+      <div id="splitResizer" class="split-resizer hairline-resizer" title="Drag to resize (Double-click for 50:50)"></div>
+
+      <!-- BOTTOM PANE (Pane 2) -->
+      <section id="pane2" class="viewer-pane" data-pane-id="pane2">
+        <!-- Floating Micro Controls (NO thick middle toolbar!) -->
+        <div class="pane-floating-bar">
+          <span class="floating-tag pane2-badge">Bottom Pane</span>
+          <div class="floating-nav">
+            <button class="f-btn btn-prev-page" title="Previous Page">◀</button>
+            <span class="f-page-info"><input type="number" class="pane-page-input" min="1" value="1"> / <span class="pane-total-pages">0</span></span>
+            <button class="f-btn btn-next-page" title="Next Page">▶</button>
+          </div>
+          <div class="floating-zoom">
+            <button class="f-btn btn-zoom-out" title="Zoom Out">−</button>
+            <select class="f-select pane-zoom-select" title="Zoom">
+              <option value="fit-width">Fit Width</option>
+              <option value="fit-page">Fit Page</option>
+              <option value="0.75">75%</option>
+              <option value="1.0" selected>100%</option>
+              <option value="1.25">125%</option>
+              <option value="1.5">150%</option>
+              <option value="2.0">200%</option>
+            </select>
+            <button class="f-btn btn-zoom-in" title="Zoom In">+</button>
+            <button class="f-btn btn-rotate" title="Rotate 90°">↻</button>
+          </div>
+        </div>
+
+        <!-- Viewport -->
+        <div id="pane2Viewport" class="pane-viewport">
+          <div id="pane2Pages" class="pages-wrapper"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- IELTS Answer Sheet & Notes Drawer -->
+    <aside id="ieltsDrawer" class="ielts-drawer">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          <span>IELTS & Exam Companion</span>
+        </div>
+        <button id="btnCloseDrawer" class="drawer-close-btn" title="Close Drawer">✕</button>
+      </div>
+
+      <div class="drawer-tabs">
+        <button id="tabBtnAnswers" class="drawer-tab active" data-tab="answersTab">Answer Sheet (Q1-40)</button>
+        <button id="tabBtnNotes" class="drawer-tab" data-tab="notesTab">Scratchpad & Vocab</button>
+      </div>
+
+      <div class="drawer-content">
+        <!-- Answers Tab -->
+        <div id="answersTab" class="tab-pane active">
+          <div class="tab-actions-bar">
+            <button id="btnCopyAnswers" class="btn btn-small" title="Copy answers to clipboard">Copy</button>
+            <button id="btnDownloadAnswers" class="btn btn-small" title="Download text file">Download .TXT</button>
+            <button id="btnClearAnswers" class="btn btn-small btn-danger" title="Clear all answers">Clear</button>
+          </div>
+          <div class="answers-grid" id="answersGrid"></div>
+        </div>
+
+        <!-- Notes Tab -->
+        <div id="notesTab" class="tab-pane">
+          <p class="notes-hint">Auto-saved scratchpad for paragraph main ideas, difficult vocabulary & essay outlines.</p>
+          <textarea id="scratchpadNotes" class="scratchpad-area" placeholder="Type vocabulary, reading notes or rough work here..."></textarea>
+          <div class="notes-footer">
+            <span id="notesStatus" class="notes-status">Saved</span>
+            <button id="btnClearNotes" class="btn btn-small btn-danger">Clear Notes</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Drag & Drop Overlay -->
+  <div id="dropOverlay" class="drop-overlay">
+    <div class="drop-modal">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+      </svg>
+      <h3>Drop PDF file here</h3>
+      <p id="dropOverlayHint">Release to open in DuoVista Split View</p>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="lib/pdf.min.js"></script>
+  <script src="viewer.js"></script>
+</body>
+</html>

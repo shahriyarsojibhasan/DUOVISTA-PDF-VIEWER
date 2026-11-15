@@ -32,6 +32,7 @@ $includeItems = @(
     "llms.txt",
     "robots.txt",
     "sitemap.xml",
+    "updates.xml",
     "google6630922b71338df7.html",
     "README.md",
     "1-Click-Install-Edge.bat",

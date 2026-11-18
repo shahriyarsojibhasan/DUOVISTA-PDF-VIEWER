@@ -1,15 +1,31 @@
 Windows Registry Editor Version 5.00
 
-; DuoVista PDF Studio - Browser Allowlist & Sources Registry Fix
+; DuoVista PDF Studio - Windows 10 & 11 Browser Allowlist & Sources Registry Fix
 ; Created by Shahriyar Sojib Hasan (buymeacoffee.com/shahriyarsojibhasan)
-; This enables offline CRX installation and bypasses the "Not listed in Chrome Web Store" & "CRX_REQUIRED_PROOF_MISSING" warnings
+; Unlocks HKLM & HKCU policies for Google Chrome, Microsoft Edge, and Brave
 ; Extension ID: nddnddpjpbnkkbekjdflejaefbeniloa
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge\ExtensionInstallSources]
+"1"="<all_urls>"
+"2"="file://*/*"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge\ExtensionInstallAllowlist]
+"1"="*"
+"2"="nddnddpjpbnkkbekjdflejaefbeniloa"
 
 [HKEY_CURRENT_USER\Software\Policies\Microsoft\Edge\ExtensionInstallSources]
 "1"="<all_urls>"
 "2"="file://*/*"
 
 [HKEY_CURRENT_USER\Software\Policies\Microsoft\Edge\ExtensionInstallAllowlist]
+"1"="*"
+"2"="nddnddpjpbnkkbekjdflejaefbeniloa"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome\ExtensionInstallSources]
+"1"="<all_urls>"
+"2"="file://*/*"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome\ExtensionInstallAllowlist]
 "1"="*"
 "2"="nddnddpjpbnkkbekjdflejaefbeniloa"
 
@@ -21,9 +37,9 @@ Windows Registry Editor Version 5.00
 "1"="*"
 "2"="nddnddpjpbnkkbekjdflejaefbeniloa"
 
-[HKEY_CURRENT_USER\Software\Policies\BraveSoftware\Brave\ExtensionInstallSources]
-"1"="<all_urls>"
-"2"="file://*/*"
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\BraveSoftware\Brave\ExtensionInstallAllowlist]
+"1"="*"
+"2"="nddnddpjpbnkkbekjdflejaefbeniloa"
 
 [HKEY_CURRENT_USER\Software\Policies\BraveSoftware\Brave\ExtensionInstallAllowlist]
 "1"="*"

@@ -19,9 +19,10 @@ $pemKey = Join-Path $releaseDir "DuoVista-PDF-Studio-key.pem"
 
 Write-Host "Creating clean release packages for DuoVista PDF Studio..." -ForegroundColor Cyan
 
-# Files and folders to include
-$includeItems = @(
+# Pure Web / Store Extension items (No .bat / .reg binaries that Store reviewers flag)
+$storeItems = @(
     "manifest.json",
+    "manifest.webmanifest",
     "background.js",
     "viewer.html",
     "viewer.css",
@@ -35,38 +36,50 @@ $includeItems = @(
     "updates.xml",
     "google6630922b71338df7.html",
     "README.md",
-    "1-Click-Install-Edge.bat",
-    "Enable-DuoVista-Allowlist.bat",
-    "Enable-DuoVista-Allowlist.reg",
     "icons",
     "lib",
     "sample"
 )
 
+# Helper scripts included in Unpacked.zip & CRX.zip for Windows 10/11 users
+$helperItems = @(
+    "HOW_TO_INSTALL.txt",
+    "Fix-Windows-10-11-Extension.bat",
+    "1-Click-Install-Edge.bat",
+    "Enable-DuoVista-Allowlist.bat",
+    "Enable-DuoVista-Allowlist.reg"
+)
+
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-# 1. Create Clean Build Folder for Store & Packing
+# 1. Create Clean Build Folder for Store & CRX Packing
 $cleanBuildDir = "$env:TEMP\DuoVista-PDF-Studio"
 if (Test-Path $cleanBuildDir) { Remove-Item $cleanBuildDir -Recurse -Force }
 New-Item -ItemType Directory -Path $cleanBuildDir | Out-Null
 
-foreach ($item in $includeItems) {
+foreach ($item in $storeItems) {
     $srcPath = Join-Path $workspaceDir $item
     if (Test-Path $srcPath) {
         Copy-Item -Path $srcPath -Destination $cleanBuildDir -Recurse -Force
     }
 }
 
-# 2. Create Store Zip (no parent directory inside zip)
+# 2. Create Store Zip (pure extension package for Chrome Web Store & Edge Add-ons)
 if (Test-Path $storeZipName) { Remove-Item $storeZipName -Force }
 [System.IO.Compression.ZipFile]::CreateFromDirectory($cleanBuildDir, $storeZipName)
 Write-Host "[OK] Store package created: $storeZipName" -ForegroundColor Green
 
-# 3. Create Unpacked Zip (contains DuoVista-PDF-Studio root folder for clean Extract All)
+# 3. Create Unpacked Zip (contains DuoVista-PDF-Studio folder + Windows 10/11 helpers)
 if (Test-Path $unpackedZipName) { Remove-Item $unpackedZipName -Force }
 $tempRoot = "$env:TEMP\duovista_unpacked_container_$([System.Guid]::NewGuid().ToString())"
 $tempSub = Join-Path $tempRoot "DuoVista-PDF-Studio"
 Copy-Item -Path $cleanBuildDir -Destination $tempSub -Recurse -Force
+foreach ($h in $helperItems) {
+    $hp = Join-Path $workspaceDir $h
+    if (Test-Path $hp) {
+        Copy-Item -Path $hp -Destination $tempSub -Force
+    }
+}
 [System.IO.Compression.ZipFile]::CreateFromDirectory($tempRoot, $unpackedZipName)
 Remove-Item -Path $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
 Write-Host "[OK] Unpacked package created: $unpackedZipName" -ForegroundColor Green
@@ -109,6 +122,7 @@ try {
     if (Test-Path $crxName) {
         Copy-Item -Path $crxName -Destination $tempCrxBundle -Force
     }
+    Copy-Item -Path (Join-Path $workspaceDir "Fix-Windows-10-11-Extension.bat") -Destination $tempCrxBundle -Force
     Copy-Item -Path (Join-Path $workspaceDir "1-Click-Install-Edge.bat") -Destination $tempCrxBundle -Force
     Copy-Item -Path (Join-Path $workspaceDir "Enable-DuoVista-Allowlist.bat") -Destination $tempCrxBundle -Force
     Copy-Item -Path (Join-Path $workspaceDir "Enable-DuoVista-Allowlist.reg") -Destination $tempCrxBundle -Force
@@ -123,6 +137,7 @@ try {
 Copy-Item -Path $crxZipName -Destination (Join-Path $workspaceDir "DuoVista-PDF-Studio-v2.1.0-CRX.zip") -Force
 
 # Copy scripts to release folder for direct download
+Copy-Item -Path (Join-Path $workspaceDir "Fix-Windows-10-11-Extension.bat") -Destination $releaseDir -Force
 Copy-Item -Path (Join-Path $workspaceDir "1-Click-Install-Edge.bat") -Destination $releaseDir -Force
 Copy-Item -Path (Join-Path $workspaceDir "Enable-DuoVista-Allowlist.bat") -Destination $releaseDir -Force
 Copy-Item -Path (Join-Path $workspaceDir "Enable-DuoVista-Allowlist.reg") -Destination $releaseDir -Force

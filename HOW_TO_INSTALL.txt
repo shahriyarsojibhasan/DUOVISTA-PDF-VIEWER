@@ -1,45 +1,57 @@
 ================================================================================
-          DuoVista PDF Studio (v2.1.0) - Installation Guide
-          Created by Shahriyar Sojib Hasan (100% Free for Students)
-          Support / Cheer Up: https://buymeacoffee.com/shahriyarsojibhasan
+       DuoVista PDF Studio (v2.1.0) - Windows 10 & 11 Installation Guide
+       Created by Shahriyar Sojib Hasan (100% Free for Students Worldwide)
+       Support / Cheer Up: https://buymeacoffee.com/shahriyarsojibhasan
 ================================================================================
 
-[বাংলা নির্দেশিকা]
+[বাংলা নির্দেশিকা — Windows 10 ও Windows 11 এর জন্য ১০০% স্থায়ী সমাধান]
 
-কিভাবে খুব সহজে ইনস্টল করবেন (যেকোনো ব্রাউজারে):
-
-পদ্ধতি ১: ১-ক্লিক অটো ইনস্টলার (সবচেয়ে সহজ):
-1. এই ফোল্ডারের "1-Click-Install-Edge.bat" ফাইলে ডাবল ক্লিক করুন।
-2. ব্রাউজারে Developer mode অন করে "Load unpacked" বাটন চাপুন।
-3. ব্যাস! DuoVista সাথে সাথে চালু হয়ে যাবে।
-
-পদ্ধতি ২: CRX ফাইল দিয়ে ইনস্টল:
-1. প্রথমে "Enable-DuoVista-Allowlist.bat" ফাইলটিতে ডাবল ক্লিক করুন।
-2. এরপর Google Chrome বা Microsoft Edge ওপেন করে অ্যাড্রেস বারে যান:
-   - Chrome: chrome://extensions
-   - Edge:   edge://extensions
-3. উপরে ডান কোণে (Edge-এ নিচে বামে) "Developer mode" অন করুন।
-4. এবার "DuoVista-PDF-Studio-v2.1.0.crx" ফাইলটি মাউস দিয়ে টেনে এনে 
-   extensions পেজের ওপর ছেড়ে দিন (Drag and Drop)।
-5. "Add extension" চাপুন। ব্যাস, সম্পন্ন!
+প্রশ্ন: CRX ফাইল Drag & Drop করলে অ্যাড হয়, কিন্তু সুইচটি ON করা যায় না কেন (Greyed Out)?
+উত্তর: Windows 10 এবং Windows 11-এ Chrome ও Edge-এর সিকিউরিটি পলিসির কারণে সরাসরি ".crx" ফাইল ড্রপ করলে ব্রাউজার সেটির সুইচ অফ করে রাখে। কিন্তু ফোল্ডার হিসেবে (Unpacked) দিলে বা নিচের ১-ক্লিক ফিক্সার চালালে সুইচটি সাথে সাথে ON হয়ে যায় এবং আজীবন সচল থাকে!
 
 --------------------------------------------------------------------------------
+সমাধান ১: ১-ক্লিক অটো ফিক্সার (Fix-Windows-10-11-Extension.bat) — সবচেয়ে সহজ:
+--------------------------------------------------------------------------------
+1. এই ফোল্ডারের "Fix-Windows-10-11-Extension.bat" ফাইলে ডাবল ক্লিক করুন (Yes চাপুন)।
+2. এটি স্বয়ংক্রিয়ভাবে C:\DuoVista-PDF-Studio ফোল্ডারে এক্সটেনশনটি আনপ্যাক করবে এবং 
+   Windows 10/11 রেজিস্ট্রি পলিসি আনলক করবে।
+3. এবার Chrome (chrome://extensions) বা Edge (edge://extensions)-এ যান:
+   - পুরনো ডিজেবল হওয়া DuoVista কার্ডটি থাকলে "Remove" করে দিন।
+   - "Developer mode" সুইচটি ON করুন।
+   - "Load unpacked" বাটনে ক্লিক করে Ctrl+V চাপুন (C:\DuoVista-PDF-Studio পাথটি 
+     অলরেডি কপি করা আছে) এবং "Select Folder" দিন!
+   - ব্যাস! সুইচটি ১০০% ON থাকবে এবং কখনোই বন্ধ হবে না!
 
-[ENGLISH INSTRUCTIONS]
-
-Method 1: 1-Click Helper (Recommended):
-1. Double-click "1-Click-Install-Edge.bat".
-2. Turn ON Developer mode in browser and click "Load unpacked".
-3. Done!
-
-Method 2: Install via CRX file:
-1. Double-click "Enable-DuoVista-Allowlist.bat" to unlock Windows policy.
-2. Open Chrome (chrome://extensions) or Edge (edge://extensions).
-3. Turn ON "Developer mode".
-4. Drag and drop "DuoVista-PDF-Studio-v2.1.0.crx" onto the extensions page.
-5. Click "Add Extension". Done!
+--------------------------------------------------------------------------------
+সমাধান ২: সরাসরি ফোল্ডার Drag & Drop (কোনো স্ক্রিপ্ট ছাড়াই):
+--------------------------------------------------------------------------------
+1. "DuoVista-PDF-Studio-v2.1.0-Unpacked.zip" ফাইলটি Extract (আনজিপ) করুন।
+2. Chrome বা Edge-এ Developer mode ON করুন।
+3. আনজিপ করা "DuoVista-PDF-Studio" ফোল্ডারটি মাউস দিয়ে টেনে extensions পেজে ছেড়ে দিন 
+   (অথবা Load unpacked দিয়ে সিলেক্ট করুন)। সাথে সাথে সুইচটি ON হয়ে যাবে!
 
 ================================================================================
-Web Version (No install needed): https://shahriyarsojibhasan.github.io/DuoVista-Pdf-Viewer/
+[ENGLISH INSTRUCTIONS — WINDOWS 10 & WINDOWS 11]
+
+Why can't I turn ON the toggle switch after dragging the .CRX file?
+Windows 10/11 Chrome & Edge block raw ".crx" files from turning ON outside the store.
+Loading the extracted FOLDER turns the switch ON immediately and permanently!
+
+Option 1 (1-Click Auto-Fixer):
+1. Double-click "Fix-Windows-10-11-Extension.bat" (Click Yes for Admin).
+2. It automatically extracts DuoVista to "C:\DuoVista-PDF-Studio" and unlocks HKLM/HKCU policies.
+3. In chrome://extensions or edge://extensions:
+   - Remove the old greyed-out CRX card if present.
+   - Turn ON "Developer mode".
+   - Click "Load unpacked" -> Press Ctrl+V (C:\DuoVista-PDF-Studio) -> Select Folder!
+
+Option 2 (Unpacked Folder Drag & Drop):
+1. Extract "DuoVista-PDF-Studio-v2.1.0-Unpacked.zip".
+2. Turn ON "Developer mode" in chrome://extensions or edge://extensions.
+3. Click "Load unpacked" and select the extracted folder (or drag the FOLDER onto the page).
+
+================================================================================
+Live Web App (Works on Phone & PC without install):
+https://shahriyarsojibhasan.github.io/DuoVista-Pdf-Viewer/
 GitHub: https://github.com/shahriyarsojibhasan/DuoVista-Pdf-Viewer
 ================================================================================

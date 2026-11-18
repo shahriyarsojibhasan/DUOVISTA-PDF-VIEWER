@@ -72,4 +72,6 @@ if __name__ == "__main__":
     create_icon(16, "icons/icon16.png")
     create_icon(48, "icons/icon48.png")
     create_icon(128, "icons/icon128.png")
+    create_icon(192, "icons/icon192.png")
+    create_icon(512, "icons/icon512.png")
     print("Icons generated successfully!")

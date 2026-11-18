@@ -93,10 +93,24 @@ class PaneViewer {
       this.onViewportScroll();
     }, { passive: true });
 
+    let resizeTimer = null;
+    this.lastViewportWidth = 0;
+    this.lastViewportHeight = 0;
     window.addEventListener('resize', () => {
-      if (this.scaleMode === 'fit-width' || this.scaleMode === 'fit-page') {
-        this.recalculateAndRerender();
-      }
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (!this.pdfDoc) return;
+        const curW = this.viewport.clientWidth;
+        const curH = this.viewport.clientHeight;
+        const widthChanged = Math.abs(curW - this.lastViewportWidth) > 4;
+        const heightChanged = Math.abs(curH - this.lastViewportHeight) > 4;
+        if ((this.scaleMode === 'fit-width' && widthChanged) ||
+            (this.scaleMode === 'fit-page' && (widthChanged || heightChanged))) {
+          this.lastViewportWidth = curW;
+          this.lastViewportHeight = curH;
+          this.recalculateAndRerender();
+        }
+      }, 120);
     });
   }
 
@@ -173,20 +187,23 @@ class PaneViewer {
       this.observer.observe(pageWrap);
     }
 
-    this.recalculateAndRerender();
+    await this.recalculateAndRerender();
 
     if (initialPage > 1) {
-      setTimeout(() => this.goToPage(initialPage), 150);
+      this.goToPage(initialPage, false);
     }
   }
 
   computeScaleForPage(unscaledViewport) {
+    const isMobile = window.innerWidth <= 600;
+    const padX = isMobile ? 10 : 28;
+    const rawW = this.viewport.clientWidth || window.innerWidth;
     if (this.scaleMode === 'fit-width') {
-      const availWidth = Math.max(260, this.viewport.clientWidth - 32);
+      const availWidth = Math.max(180, rawW - padX);
       return availWidth / unscaledViewport.width;
     } else if (this.scaleMode === 'fit-page') {
-      const availWidth = Math.max(260, this.viewport.clientWidth - 32);
-      const availHeight = Math.max(200, this.viewport.clientHeight - 32);
+      const availWidth = Math.max(180, rawW - padX);
+      const availHeight = Math.max(160, (this.viewport.clientHeight || 300) - 24);
       const scaleX = availWidth / unscaledViewport.width;
       const scaleY = availHeight / unscaledViewport.height;
       return Math.min(scaleX, scaleY);
@@ -198,6 +215,8 @@ class PaneViewer {
   async recalculateAndRerender() {
     if (!this.pdfDoc || this.numPages === 0) return;
 
+    this.lastViewportWidth = this.viewport.clientWidth;
+    this.lastViewportHeight = this.viewport.clientHeight;
     const firstPage = await this.pdfDoc.getPage(1);
     const unscaledViewport = firstPage.getViewport({ scale: 1, rotation: this.rotation });
     this.scale = this.computeScaleForPage(unscaledViewport);
@@ -249,6 +268,7 @@ class PaneViewer {
 
       pageWrap.style.width = `${Math.floor(viewport.width)}px`;
       pageWrap.style.height = `${Math.floor(viewport.height)}px`;
+      pageWrap.style.setProperty('--scale-factor', viewport.scale);
 
       canvas.width = Math.floor(viewport.width * dpr);
       canvas.height = Math.floor(viewport.height * dpr);
@@ -285,6 +305,7 @@ class PaneViewer {
         textLayer.innerHTML = '';
         textLayer.style.width = `${Math.floor(viewport.width)}px`;
         textLayer.style.height = `${Math.floor(viewport.height)}px`;
+        textLayer.style.setProperty('--scale-factor', viewport.scale);
 
         const textContent = await page.getTextContent();
         pdfjsLib.renderTextLayer({
@@ -325,16 +346,17 @@ class PaneViewer {
     }
   }
 
-  goToPage(pageNum) {
+  goToPage(pageNum, smooth = true) {
     if (!this.pdfDoc || pageNum < 1 || pageNum > this.numPages) return;
     this.currentPage = pageNum;
     this.pageInput.value = pageNum;
 
     const pageWrap = this.pageElements[pageNum - 1];
     if (pageWrap) {
+      const topClearance = this.floatingBar ? (this.floatingBar.offsetHeight + 12) : 40;
       this.viewport.scrollTo({
-        top: pageWrap.offsetTop - 8,
-        behavior: 'smooth'
+        top: Math.max(0, pageWrap.offsetTop - topClearance),
+        behavior: smooth ? 'smooth' : 'instant'
       });
     }
   }
@@ -405,11 +427,37 @@ class AnnotationManager {
     this.btnToggle.addEventListener('click', () => this.toggleBar());
     this.btnClose.addEventListener('click', () => this.hideBar());
 
-    this.btnHighlight.addEventListener('click', () => this.setTool('highlight'));
-    this.btnPen.addEventListener('click', () => this.setTool('pen'));
-    this.btnText.addEventListener('click', () => this.setTool('text'));
-    this.btnEraser.addEventListener('click', () => this.setTool('eraser'));
+    const groupHighlight = document.getElementById('groupHighlight');
+    const groupPen = document.getElementById('groupPen');
+
+    this.btnHighlight.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.setTool('highlight');
+      if (groupHighlight) groupHighlight.classList.toggle('show-colors');
+      if (groupPen) groupPen.classList.remove('show-colors');
+    });
+    this.btnPen.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.setTool('pen');
+      if (groupPen) groupPen.classList.toggle('show-colors');
+      if (groupHighlight) groupHighlight.classList.remove('show-colors');
+    });
+    this.btnText.addEventListener('click', () => {
+      this.setTool('text');
+      if (groupHighlight) groupHighlight.classList.remove('show-colors');
+      if (groupPen) groupPen.classList.remove('show-colors');
+    });
+    this.btnEraser.addEventListener('click', () => {
+      this.setTool('eraser');
+      if (groupHighlight) groupHighlight.classList.remove('show-colors');
+      if (groupPen) groupPen.classList.remove('show-colors');
+    });
     this.btnClear.addEventListener('click', () => this.clearCurrentPage());
+
+    document.addEventListener('click', () => {
+      if (groupHighlight) groupHighlight.classList.remove('show-colors');
+      if (groupPen) groupPen.classList.remove('show-colors');
+    });
 
     document.querySelectorAll('#highlightColorPicker .color-dot').forEach(dot => {
       dot.addEventListener('click', (e) => {
@@ -419,6 +467,7 @@ class AnnotationManager {
         document.querySelectorAll('#highlightColorPicker .color-dot').forEach(d => d.classList.remove('active'));
         dot.classList.add('active');
         this.setTool('highlight');
+        if (groupHighlight) groupHighlight.classList.remove('show-colors');
       });
     });
 
@@ -430,6 +479,7 @@ class AnnotationManager {
         document.querySelectorAll('#penColorPicker .color-dot').forEach(d => d.classList.remove('active'));
         dot.classList.add('active');
         this.setTool('pen');
+        if (groupPen) groupPen.classList.remove('show-colors');
       });
     });
   }
@@ -510,10 +560,12 @@ class AnnotationManager {
           if (!this.pageStrokes.has(pageKey)) {
             this.pageStrokes.set(pageKey, []);
           }
+          const dpr = window.devicePixelRatio || 1;
+          const baseW = this.activeTool === 'highlight' ? this.highlightWidth : this.penWidth;
           this.pageStrokes.get(pageKey).push({
             tool: this.activeTool,
             color: this.activeTool === 'highlight' ? this.highlightColor : this.penColor,
-            width: this.activeTool === 'highlight' ? this.highlightWidth : this.penWidth,
+            width: baseW * dpr,
             opacity: this.activeTool === 'highlight' ? 0.35 : 1.0,
             points: [...localPath]
           });
@@ -558,6 +610,7 @@ class AnnotationManager {
   drawLiveStroke(canvas, points, tool) {
     const ctx = canvas.getContext('2d');
     if (points.length < 2) return;
+    const dpr = window.devicePixelRatio || 1;
 
     ctx.save();
     ctx.lineCap = 'round';
@@ -566,11 +619,11 @@ class AnnotationManager {
     if (tool === 'highlight') {
       ctx.globalAlpha = 0.35;
       ctx.strokeStyle = this.highlightColor;
-      ctx.lineWidth = this.highlightWidth;
+      ctx.lineWidth = this.highlightWidth * dpr;
     } else {
       ctx.globalAlpha = 1.0;
       ctx.strokeStyle = this.penColor;
-      ctx.lineWidth = this.penWidth;
+      ctx.lineWidth = this.penWidth * dpr;
     }
 
     ctx.beginPath();
@@ -611,7 +664,7 @@ class AnnotationManager {
 
   eraseNear(pageKey, x, y, canvas) {
     const strokes = this.pageStrokes.get(pageKey) || [];
-    const threshold = 20;
+    const threshold = 20 * (window.devicePixelRatio || 1);
 
     const filtered = strokes.filter(stroke => {
       for (const pt of stroke.points) {
@@ -629,6 +682,8 @@ class AnnotationManager {
       ctx.globalAlpha = stroke.opacity;
       ctx.strokeStyle = stroke.color;
       ctx.lineWidth = stroke.width;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
       ctx.beginPath();
       ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
       for (let i = 1; i < stroke.points.length; i++) ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
@@ -781,14 +836,62 @@ class DuoVistaApp {
     // Fullscreen
     this.btnFullscreen.addEventListener('click', () => this.toggleFullscreen());
 
+    // Drawer Backdrop
+    const drawerBackdrop = document.getElementById('drawerBackdrop');
+    const syncBackdrop = () => {
+      if (!drawerBackdrop) return;
+      const anyOpen = this.ieltsDrawer.classList.contains('open') || this.menuDrawer.classList.contains('open');
+      drawerBackdrop.classList.toggle('visible', anyOpen);
+    };
+    this.syncBackdrop = syncBackdrop;
+
+    if (drawerBackdrop) {
+      drawerBackdrop.addEventListener('click', () => {
+        this.ieltsDrawer.classList.remove('open');
+        this.menuDrawer.classList.remove('open');
+        syncBackdrop();
+      });
+    }
+
     // IELTS Drawer
     this.btnToggleDrawer.addEventListener('click', () => {
       this.ieltsDrawer.classList.toggle('open');
       this.menuDrawer.classList.remove('open');
+      syncBackdrop();
     });
     this.btnCloseDrawer.addEventListener('click', () => {
       this.ieltsDrawer.classList.remove('open');
+      syncBackdrop();
     });
+
+    // Windows 10 & 11 Extension Fix Modal Events
+    const winFixModal = document.getElementById('winFixModal');
+    const btnWelcomeWinFix = document.getElementById('btnWelcomeWinFix');
+    const btnMenuWinFix = document.getElementById('btnMenuWinFix');
+    const btnCloseWinFixModal = document.getElementById('btnCloseWinFixModal');
+
+    if (btnWelcomeWinFix && winFixModal) {
+      btnWelcomeWinFix.addEventListener('click', () => {
+        winFixModal.style.display = 'flex';
+      });
+    }
+    if (btnMenuWinFix && winFixModal) {
+      btnMenuWinFix.addEventListener('click', () => {
+        this.menuDrawer.classList.remove('open');
+        syncBackdrop();
+        winFixModal.style.display = 'flex';
+      });
+    }
+    if (btnCloseWinFixModal && winFixModal) {
+      btnCloseWinFixModal.addEventListener('click', () => {
+        winFixModal.style.display = 'none';
+      });
+    }
+    if (winFixModal) {
+      winFixModal.addEventListener('click', (e) => {
+        if (e.target === winFixModal) winFixModal.style.display = 'none';
+      });
+    }
 
     // File Permission Guide Modal Events
     const permModal = document.getElementById('filePermissionModal');
@@ -822,8 +925,10 @@ class DuoVistaApp {
       });
     }
 
-    // Drag & Drop
+    // Drag & Drop (only trigger overlay for dragged external files, not page text selections)
     window.addEventListener('dragenter', (e) => {
+      const types = e.dataTransfer && e.dataTransfer.types ? Array.from(e.dataTransfer.types) : [];
+      if (!types.includes('Files')) return;
       e.preventDefault();
       this.dropOverlay.classList.add('visible');
     });
@@ -872,13 +977,16 @@ class DuoVistaApp {
     this.btnMenuDrawer.addEventListener('click', () => {
       this.menuDrawer.classList.toggle('open');
       this.ieltsDrawer.classList.remove('open');
+      if (this.syncBackdrop) this.syncBackdrop();
     });
     this.btnBrandAbout.addEventListener('click', () => {
       this.menuDrawer.classList.add('open');
       this.ieltsDrawer.classList.remove('open');
+      if (this.syncBackdrop) this.syncBackdrop();
     });
     this.btnCloseMenuDrawer.addEventListener('click', () => {
       this.menuDrawer.classList.remove('open');
+      if (this.syncBackdrop) this.syncBackdrop();
     });
 
     // Theme Chips
@@ -901,11 +1009,13 @@ class DuoVistaApp {
     btnMenuSwap.addEventListener('click', () => {
       this.swapPanes();
       this.menuDrawer.classList.remove('open');
+      if (this.syncBackdrop) this.syncBackdrop();
     });
 
     btnMenuReset.addEventListener('click', () => {
       this.resetSplit();
       this.menuDrawer.classList.remove('open');
+      if (this.syncBackdrop) this.syncBackdrop();
     });
 
     btnMenuSync.addEventListener('click', () => {
@@ -917,6 +1027,7 @@ class DuoVistaApp {
     btnMenuSample.addEventListener('click', () => {
       this.loadSamplePdf();
       this.menuDrawer.classList.remove('open');
+      if (this.syncBackdrop) this.syncBackdrop();
     });
 
     // Audio Player in Slide Menu
@@ -978,7 +1089,7 @@ class DuoVistaApp {
 
     this.dualFileBar.style.display = isDual ? 'flex' : 'none';
     const openBtnText = document.getElementById('openPdfBtnText');
-    openBtnText.textContent = isDual ? 'Open Top PDF' : 'Open PDF';
+    openBtnText.textContent = isDual ? 'Top PDF' : 'Open PDF';
 
     this.showToast(isDual ? 'Dual File Mode: View 2 DIFFERENT PDFs simultaneously' : 'Single Document Mode: Viewing 1 PDF');
   }
@@ -995,9 +1106,19 @@ class DuoVistaApp {
 
   initSplitResizer() {
     let isDragging = false;
+    let lastTapTime = 0;
     const pane1El = document.getElementById('pane1');
 
     this.splitResizer.addEventListener('pointerdown', (e) => {
+      const now = Date.now();
+      if (now - lastTapTime < 320) {
+        lastTapTime = 0;
+        isDragging = false;
+        this.resetSplit();
+        return;
+      }
+      lastTapTime = now;
+
       isDragging = true;
       this.splitResizer.classList.add('is-dragging');
       this.splitResizer.setPointerCapture(e.pointerId);
@@ -1039,10 +1160,6 @@ class DuoVistaApp {
 
     this.splitResizer.addEventListener('pointerup', stopDragging);
     this.splitResizer.addEventListener('pointercancel', stopDragging);
-
-    this.splitResizer.addEventListener('dblclick', () => {
-      this.resetSplit();
-    });
   }
 
   resetSplit() {
@@ -1113,24 +1230,29 @@ class DuoVistaApp {
     targetPane.syncScrollRatio(ratio);
   }
 
+  /**
+   * Populate both viewer panes with a loaded PDF document instance.
+   */
+  applySharedDocument(doc, filename) {
+    this.doc1 = doc;
+    this.doc2 = doc;
+    this.currentFileName = filename;
+    this.labelTopPdf.textContent = filename;
+    this.labelBottomPdf.textContent = filename;
+
+    this.onDocumentActive(filename, doc.numPages);
+
+    const p2Start = doc.numPages >= 3 ? 3 : (doc.numPages >= 2 ? 2 : 1);
+    this.pane1.loadDocument(doc, 1, filename);
+    this.pane2.loadDocument(doc, p2Start, filename);
+  }
+
   async loadSingleFile(file) {
     try {
       this.showToast(`Loading: ${file.name}...`);
       const buffer = await file.arrayBuffer();
-      const task = pdfjsLib.getDocument({ data: buffer });
-      const doc = await task.promise;
-      this.doc1 = doc;
-      this.doc2 = doc;
-      this.currentFileName = file.name;
-      this.labelTopPdf.textContent = file.name;
-      this.labelBottomPdf.textContent = file.name;
-
-      this.onDocumentActive(file.name, doc.numPages);
-
-      const p2Start = doc.numPages >= 3 ? 3 : (doc.numPages >= 2 ? 2 : 1);
-      this.pane1.loadDocument(doc, 1, file.name);
-      this.pane2.loadDocument(doc, p2Start, file.name);
-
+      const doc = await pdfjsLib.getDocument({ data: buffer }).promise;
+      this.applySharedDocument(doc, file.name);
       this.showToast(`Opened "${file.name}" (${doc.numPages} Pages)`);
     } catch (err) {
       console.error(err);
@@ -1215,9 +1337,9 @@ class DuoVistaApp {
 
   async loadUrl(url) {
     if (!url) return;
+    const cleanUrl = url.trim();
     try {
       this.showToast('Fetching PDF...');
-      const cleanUrl = url.trim();
       const rawName = cleanUrl.substring(cleanUrl.lastIndexOf('/') + 1).split('?')[0].split('#')[0];
       const filename = decodeURIComponent(rawName) || 'document.pdf';
 
@@ -1240,33 +1362,48 @@ class DuoVistaApp {
         } catch (fetchErr) {
           console.warn("Direct pdfjs getDocument failed, retrying with fetch ArrayBuffer...", fetchErr);
           const res = await fetch(cleanUrl);
+          if (!res.ok || res.status === 204) {
+            throw new Error(`HTTP ${res.status} — blocked by CORS or Download Manager`);
+          }
           const buffer = await res.arrayBuffer();
+          if (!buffer || buffer.byteLength === 0) {
+            throw new Error('Empty PDF response (intercepted by Download Manager)');
+          }
           doc = await pdfjsLib.getDocument({ data: buffer }).promise;
         }
       }
 
-      this.doc1 = doc;
-      this.doc2 = doc;
-      this.currentFileName = filename;
-      this.labelTopPdf.textContent = filename;
-      this.labelBottomPdf.textContent = filename;
-
-      this.onDocumentActive(filename, doc.numPages);
-
-      const p2Start = doc.numPages >= 3 ? 3 : (doc.numPages >= 2 ? 2 : 1);
-      this.pane1.loadDocument(doc, 1, filename);
-      this.pane2.loadDocument(doc, p2Start, filename);
-
+      this.applySharedDocument(doc, filename);
       this.showToast(`Loaded "${filename}"`);
     } catch (err) {
       console.error('Failed to load PDF URL:', err);
-      this.showToast('Failed to fetch PDF.');
-      this.showFilePermissionGuide(url, 'PDF Document');
+      if (cleanUrl.startsWith('file://')) {
+        this.showToast('Failed to open local PDF. Check permissions.');
+        this.showFilePermissionGuide(cleanUrl, 'PDF Document');
+      } else {
+        this.showToast('Failed to fetch URL (blocked by CORS or Download Manager). Open file from device.');
+      }
     }
   }
 
   async loadSamplePdf() {
-    this.loadUrl('sample/sample_ielts_reading.pdf');
+    try {
+      this.showToast('Loading Practice IELTS Test...');
+      // Load .dat mirror first so Windows download managers (e.g. IDM) never hijack .pdf fetch with HTTP 204
+      const res = await fetch('sample/sample_ielts_reading.dat');
+      if (res.ok) {
+        const buffer = await res.arrayBuffer();
+        if (buffer && buffer.byteLength > 100) {
+          const doc = await pdfjsLib.getDocument({ data: buffer }).promise;
+          this.applySharedDocument(doc, 'sample_ielts_reading.pdf');
+          this.showToast('Loaded "sample_ielts_reading.pdf"');
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Sample .dat fetch fallback triggered:', err);
+    }
+    return this.loadUrl('sample/sample_ielts_reading.pdf');
   }
 
   onDocumentActive(filename, numPages) {

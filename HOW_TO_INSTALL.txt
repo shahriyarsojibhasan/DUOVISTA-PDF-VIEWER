@@ -52,6 +52,6 @@ Option 2 (Unpacked Folder Drag & Drop):
 
 ================================================================================
 Live Web App (Works on Phone & PC without install):
-https://shahriyarsojibhasan.github.io/DuoVista-Pdf-Viewer/
-GitHub: https://github.com/shahriyarsojibhasan/DuoVista-Pdf-Viewer
+https://shahriyarsojibhasan.github.io/DUOVISTA-PDF-VIEWER/
+GitHub: https://github.com/shahriyarsojibhasan/DUOVISTA-PDF-VIEWER
 ================================================================================

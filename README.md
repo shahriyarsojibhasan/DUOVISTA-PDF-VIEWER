@@ -1,7 +1,7 @@
 # DuoVista PDF Studio (v2.1.0)
 **Created with ❤️ by Shahriyar Sojib Hasan — Dedicated 100% Free for Students Worldwide**  
 ☕ **Support & Cheer Up Developer:** [buymeacoffee.com/shahriyarsojibhasan](https://buymeacoffee.com/shahriyarsojibhasan)  
-🌐 **Live Web App (PC & Mobile Phone Ready):** [shahriyarsojibhasan.github.io/DuoVista-Pdf-Viewer](https://shahriyarsojibhasan.github.io/DuoVista-Pdf-Viewer/)
+🌐 **Live Web App (PC & Mobile Phone Ready):** [shahriyarsojibhasan.github.io/DUOVISTA-PDF-VIEWER](https://shahriyarsojibhasan.github.io/DUOVISTA-PDF-VIEWER/)
 
 ---
 
@@ -33,7 +33,7 @@ However, **loading the extracted FOLDER ("Unpacked") is 100% allowed on every Wi
 
 ## 📱 Works Everywhere: Computer & Mobile Phone
 - **Desktop (Windows 10/11, macOS, Linux):** Chrome/Edge extension + full mouse-hover independent scrolling + keyboard shortcuts (`F11` fullscreen, double-click divider reset).
-- **Mobile Phone & Tablet (Android, iPhone, iPad):** Open [shahriyarsojibhasan.github.io/DuoVista-Pdf-Viewer](https://shahriyarsojibhasan.github.io/DuoVista-Pdf-Viewer/) in Chrome or Safari (supports **Add to Home Screen / Install App** via PWA `manifest.webmanifest`) with touch-friendly split resizing, touch highlighter/pen drawing, and responsive compact toolbars.
+- **Mobile Phone & Tablet (Android, iPhone, iPad):** Open [shahriyarsojibhasan.github.io/DUOVISTA-PDF-VIEWER](https://shahriyarsojibhasan.github.io/DUOVISTA-PDF-VIEWER/) in Chrome or Safari (supports **Add to Home Screen / Install App** via PWA `manifest.webmanifest`) with touch-friendly split resizing, touch highlighter/pen drawing, and responsive compact toolbars.
 
 ---
 
@@ -49,7 +49,7 @@ However, **loading the extracted FOLDER ("Unpacked") is 100% allowed on every Wi
 
 ## 📦 Release Downloads
 
-All packages are available under [GitHub Releases v2.1.0](https://github.com/shahriyarsojibhasan/DuoVista-Pdf-Viewer/releases/tag/v2.1.0):
+All packages are available under [GitHub Releases v2.1.0](https://github.com/shahriyarsojibhasan/DUOVISTA-PDF-VIEWER/releases/tag/v2.1.0):
 - **`DuoVista-PDF-Studio-v2.1.0-Unpacked.zip`** — Recommended for instant drag-drop folder / "Load unpacked" on Win 10 & Win 11 Chrome & Edge (turns ON with 0 security blocks).
 - **`DuoVista-PDF-Studio-v2.1.0-CRX.zip`** — Complete shareable bundle containing `.crx`, `Fix-Windows-10-11-Extension.bat`, `Enable-DuoVista-Allowlist.bat`, `.reg`, and `HOW_TO_INSTALL.txt`.
 - **`Fix-Windows-10-11-Extension.bat`** — 1-click Windows 10/11 policy unlocker & unpacker.
@@ -61,5 +61,5 @@ All packages are available under [GitHub Releases v2.1.0](https://github.com/sha
 ## 👤 Author & Support
 - **Lead Developer:** **Shahriyar Sojib Hasan**
 - **Buy Me a Coffee:** [buymeacoffee.com/shahriyarsojibhasan](https://buymeacoffee.com/shahriyarsojibhasan)
-- **Privacy Policy:** [Privacy Policy](https://shahriyarsojibhasan.github.io/DuoVista-Pdf-Viewer/privacy.html) | **Terms:** [Terms of Service](https://shahriyarsojibhasan.github.io/DuoVista-Pdf-Viewer/terms.html)
+- **Privacy Policy:** [Privacy Policy](https://shahriyarsojibhasan.github.io/DUOVISTA-PDF-VIEWER/privacy.html) | **Terms:** [Terms of Service](https://shahriyarsojibhasan.github.io/DUOVISTA-PDF-VIEWER/terms.html)
 - **License:** MIT Open Source License.

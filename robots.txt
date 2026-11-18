@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://shahriyarsojibhasan.github.io/DuoVista-Pdf-Viewer/sitemap.xml
+Sitemap: https://shahriyarsojibhasan.github.io/DUOVISTA-PDF-VIEWER/sitemap.xml
